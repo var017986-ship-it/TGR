@@ -1,0 +1,24 @@
+services:
+  bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: funpay-bot
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - bot-data:/app/data
+      - bot-logs:/app/logs
+    init: true
+    stop_grace_period: 30s
+    healthcheck:
+      test: ["CMD", "python", "-c", "import pathlib, sqlite3; p=pathlib.Path('/app/data/bot.sqlite3'); sqlite3.connect(p).execute('SELECT 1') if p.exists() else (_ for _ in ()).throw(RuntimeError('database is not initialized'))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+volumes:
+  bot-data:
+  bot-logs:

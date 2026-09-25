@@ -1,0 +1,1 @@
+"""Optional bot plugins."""
